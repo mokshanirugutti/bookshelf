@@ -12,7 +12,7 @@ router.get('/:id', getBookById);
 
 
 // Protected routes
-router.post('/', authMiddleware, validateAdmin,validateBook, upload.single('bookCover'), createBook);
+router.post('/', authMiddleware, validateAdmin, upload.single('bookCover'),validateBook, createBook);
 router.post('/review/:id',authMiddleware, validateReview, postReview);
 
 router.delete('/delete/:id',authMiddleware, deleteBook)

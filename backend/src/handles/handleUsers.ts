@@ -7,6 +7,9 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import { uploadToCloudinary } from '../config/cloudinary';
 
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config/jwt';
+
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
         const { username, email, password, role } = req.body;
@@ -102,5 +105,36 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
+
+
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.userId;
+        if (!userId) {
+            res.status(401).json({ error: 'Unauthorized access' });
+            return;
+        }
+
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        
+
+        // Return user profile
+        res.status(200).json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            profilePicture: user.profilePicture
+        });
+    } catch (error) {
+        res.status(401).json({ error: 'Invalid or expired token' });
     }
 };

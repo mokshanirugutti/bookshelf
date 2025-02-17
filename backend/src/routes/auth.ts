@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { login, register } from '../handles/handleUsers';
+import { getUserProfile, login, register } from '../handles/handleUsers';
 import { userLoginSchema, userRegistrationSchema } from '../zodSchemas/userSchema';
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 import { validateAdmin } from '../middleware/validateAdmin';
 
 import { upload } from '../config/multer';
+import { authMiddleware } from '../middleware/validateAuth';
 
 const router = Router();
 
@@ -38,5 +39,6 @@ const validateLogin = (req: Request, res: Response, next: NextFunction) => {
 //routes
 router.post('/login', validateLogin, login);
 router.post('/register',upload.single('profilePicture'), validateRegistration, validateAdmin ,register);
+router.get('/profile',authMiddleware,getUserProfile);
 
 export default router;
