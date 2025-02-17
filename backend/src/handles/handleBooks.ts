@@ -154,7 +154,7 @@ export const postReview = async (req: Request, res: Response): Promise<void> => 
 
         // Create a new review object
         const newReview = {
-            userId: req.userId, // Assuming req.userId is set by your authentication middleware
+            userId: req.userId, 
             content,
             rating,
         };

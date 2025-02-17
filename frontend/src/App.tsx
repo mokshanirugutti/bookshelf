@@ -8,6 +8,7 @@ import ProtectedRoute from "./auth/ProtectedRoute"
 import BooksPage from './pages/BooksPage';
 import BookPage from './pages/BookPage';
 import CreateBookPage from './pages/CreateBookPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   
@@ -21,6 +22,7 @@ function App() {
           <Route path='/books/:bookId' element={<BookPage/>} />
           <Route element={<ProtectedRoute />}>
             <Route path='/createbook' element={<CreateBookPage/>} />
+            <Route path='/profile' element={<ProfilePage/>} />
           </Route>
         </Route>
         <Route path='/register' element={<RegisterPage />}/>

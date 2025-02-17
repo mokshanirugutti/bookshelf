@@ -31,9 +31,9 @@ const NavBar : React.FC = () => {
                 <h1 className="text-2xl font-semibold tracking-wide">BookShelf</h1>
             </Link>
             <div className="hidden md:flex gap-6 min-w-fit">
-                <a href="/books" className="hover:translate-y-1 transition-all ease-in-out duration-200">Books</a>
-                <a href="" className="hover:translate-y-1 transition-all ease-in-out duration-200">Reviews</a>
-                <a href="" className="hover:translate-y-1 transition-all ease-in-out duration-200">About Us</a>
+              <Link to="/books" className="hover:text-[#344054]" >Books</Link>
+              <Link to="#" className="hover:text-[#344054]" >Reviews</Link>
+              <Link to="#" className="hover:text-[#344054]" >About Us</Link>
             </div>
             <div className="hidden md:flex gap-4 min-w-fit">
             {user ? (
@@ -59,7 +59,8 @@ const NavBar : React.FC = () => {
               <DropdownMenuSeparator />
               {user.role === 'admin' &&
               <DropdownMenuItem onClick={() => {navigate('/createbook')}}>Add Books</DropdownMenuItem>
-              }
+            }
+              <DropdownMenuItem onClick={() => {navigate('/profile')}}>Profile</DropdownMenuItem>
 
               <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
@@ -88,9 +89,9 @@ const NavBar : React.FC = () => {
             <div className=" h-screen w-screen absolute top-0 right-0 z-20 backdrop-blur-md p-10 mt-16">
                 
                 <div className="flex flex-col gap-6 min-w-fit">
-                    <a href="/books" className="hover:text-[#344054]">Books</a>
-                    <a href="" className="hover:text-[#344054]">Reviews</a>
-                    <a href="" className="hover:text-[#344054]">About Us</a>  
+                  <Link to="/books" className="hover:text-[#344054]" onClick={toggleMenu}>Books</Link>
+                  <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>Reviews</Link>
+                  <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>About Us</Link>
                     {user ? (
               <button 
                 onClick={logout} 

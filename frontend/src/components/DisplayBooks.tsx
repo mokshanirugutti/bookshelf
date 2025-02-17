@@ -9,8 +9,8 @@ const DisplayBooks: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Books</h1>
+    <div className='my-5'>
+      
       {data && data.books.length === 0 ? (
         <p>No books available</p>
       ) : (
