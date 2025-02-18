@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllBooks, getBookById, createBook,  deleteBook, updateBook, postReview } from '../handles/handleBooks';
+import { getAllBooks, getBookById, createBook,  deleteBook, updateBook, postReview, getAllGenres } from '../handles/handleBooks';
 import { validateAdmin, authMiddleware, validateBook, validateReview } from '../middleware/middlewares';
 import { upload } from '../config/multer';
 
@@ -8,6 +8,7 @@ const router = Router();
 
 // Public routes
 router.get('/', getAllBooks);
+router.get('/genres', getAllGenres);
 router.get('/:id', getBookById);
 
 

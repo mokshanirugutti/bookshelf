@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BookResponse } from '@/types';
 
 const useBook = (id: string) => {
+  const URL = import.meta.env.VITE_BACKEND_URL;
   const [data, setData] = useState<BookResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -9,12 +11,8 @@ const useBook = (id: string) => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/books/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch book');
-        }
-        const result: BookResponse = await response.json();
-        setData(result);
+        const response = await axios.get<BookResponse>(`${URL}/books/${id}`);
+        setData(response.data);
       } catch (err) {
         setError((err as Error).message);
       } finally {

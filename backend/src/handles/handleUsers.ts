@@ -3,12 +3,10 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { generateToken } from '../config/jwt';
 
-import { v2 as cloudinary } from 'cloudinary';
+
 import fs from 'fs';
 import { uploadToCloudinary } from '../config/cloudinary';
 
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/jwt';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -37,7 +35,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             const uploadResult = await uploadToCloudinary(req.file.path);
             if (uploadResult && uploadResult.secure_url) {
                 profilePicture = uploadResult.secure_url;
-                fs.unlinkSync(req.file.path); // Remove file after upload
+                fs.unlinkSync(req.file.path); 
             }
         }
         // Create new user
@@ -136,5 +134,58 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
         });
     } catch (error) {
         res.status(401).json({ error: 'Invalid or expired token' });
+    }
+};
+
+
+
+
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.userId;
+        const { username, email, password } = req.body;
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: 'User  not found' });
+            return;
+        }
+
+        // Update fields if provided
+        if (username) user.username = username;
+        if (email) user.email = email;
+
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        // Handle profile picture upload
+        if (req.file) {
+            const uploadResult = await uploadToCloudinary(req.file.path);
+            if (uploadResult && uploadResult.secure_url) {
+                user.profilePicture = uploadResult.secure_url;
+                fs.unlinkSync(req.file.path); 
+            }
+        }
+
+        // Save the updated user
+        await user.save();
+
+        
+        res.status(200).json({
+            message: 'Profile updated successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                profilePicture: user.profilePicture
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
     }
 };

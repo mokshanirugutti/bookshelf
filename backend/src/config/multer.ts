@@ -21,11 +21,11 @@ export const upload = multer({
         }
     }),
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Only .jpg, .jpeg, and .png files are allowed!'));
+            cb(new Error('Only .jpg, .jpeg, .png and  .webp files are allowed!'));
         }
     }
 });

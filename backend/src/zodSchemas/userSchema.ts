@@ -11,3 +11,9 @@ export const userLoginSchema = z.object({
   username: z.string({message:"username is required"}),
   password: z.string().min(8,{message:"password is required or less than 8 characters"}),
 });
+
+export const userProfileUpdateSchema = z.object({
+    username: z.string().optional(),
+    email: z.string().email().optional(),
+    password: z.string().min(6).optional(),
+});

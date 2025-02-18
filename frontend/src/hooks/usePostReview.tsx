@@ -4,6 +4,7 @@ import { useUser } from '@/context/UserContext';
 
 
 const usePostReview = (bookId: string) => {
+  const URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem('token');
   const {user} = useUser();
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ const usePostReview = (bookId: string) => {
 
     try {
       if(user){
-        const response = await axios.post(`http://localhost:3000/books/review/${bookId}`,
+        const response = await axios.post(`${URL}/books/review/${bookId}`,
           {
             userId: user.id,
             content,

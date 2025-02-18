@@ -30,7 +30,6 @@ export interface User {
     description: string;
     author: string;
     genre: string;
-    image: string;
     price: number;
     rating: number;
     creator: string;

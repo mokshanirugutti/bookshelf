@@ -1,29 +1,34 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BooksResponse } from '@/types';
 
-const useBooks = () => {
+const useBooks = (genre: string | null, page: number, limit: number) => {
+  const URL = import.meta.env.VITE_BACKEND_URL;
   const [data, setData] = useState<BooksResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBooks = async () => {
+      setLoading(true); 
       try {
-        const response = await fetch('http://localhost:3000/books');
-        if (!response.ok) {
-          throw new Error('Failed to fetch books');
-        }
-        const result: BooksResponse = await response.json();
-        setData(result);
+        const response = await axios.get(`${URL}/books`, {
+          params: {
+            genre: genre || '', 
+            limit,
+            page 
+          },
+        });
+        setData(response.data);
       } catch (err) {
-        setError((err as Error).message);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooks();
-  }, []);
+  }, [genre, page, limit]);
 
   return { data, loading, error };
 };

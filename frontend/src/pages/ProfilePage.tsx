@@ -1,24 +1,173 @@
-import { useUser } from '@/context/UserContext'
-import React from 'react'
+"use client"
 
-const ProfilePage : React.FC = () => {
-    const {user} = useUser();
+import { useUser } from "@/context/UserContext"
+import type React from "react"
+import { useState } from "react"
+import useUpdateProfile from "@/hooks/useUpdateProfile"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AlertCircle, Loader2 } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+const ProfilePage: React.FC = () => {
+  const { user } = useUser()
+  const { updateProfile, loading, error } = useUpdateProfile()
+  const { toast } = useToast()
+
+  const [formData, setFormData] = useState({
+    username: user?.username || "",
+    email: user?.email || "",
+    password: "",
+    profilePicture: null as File | null,
+  })
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(user?.profilePicture || null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setFormData((prev) => ({ ...prev, profilePicture: file }))
+      setPreviewUrl(URL.createObjectURL(file))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsDialogOpen(false)
+    const data = new FormData()
+    data.append("username", formData.username)
+    data.append("email", formData.email)
+    if (formData.password) {
+      data.append("password", formData.password)
+    }
+    if (formData.profilePicture) {
+      data.append("profilePicture", formData.profilePicture)
+    }
+
+    try {
+      await updateProfile(data)
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated.",
+      })
+    } catch (error) {
+      console.error("Error updating profile:", error)
+    }
+  }
 
   return (
-    <div className='pagePadding'>
-        <div className='max-w-2xl mx-auto relative'>
-
-            <div className=' h-48 w-full'>
-                <img src={user?.profilePicture} alt="" className='h-64 w-64 rounded-lg absolute top-28 left-2 border-2 shadow-md' />
+    <div className="container mx-auto px-4 py-8">
+      <Card className="max-w-xl mx-auto">
+        <CardHeader>
+          <div className="flex items-center space-x-4">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={previewUrl || user?.profilePicture} alt={user?.username} />
+              <AvatarFallback>{user?.username?.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-2xl">{user?.username}</CardTitle>
+              <CardDescription>{user?.email}</CardDescription>
             </div>
-            <div className='bg-foreground h-52 w-full rounded-md'>
-                <h1 className='text-4xl font-bold text-center text-background my-2'>{user?.username}</h1>
-                <p className='text-sm text-center text-background'>{user?.email}</p>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex gap-2 flex-col md:flex-row ">
+                <div className="space-y-2 w-full">
+                    <Label htmlFor="username">Username</Label>
+                    <Input id="username" name="username" value={formData.username} onChange={handleChange} />
+                </div>
+                <div className="space-y-2 w-full">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                </div>
             </div>
-        </div>
 
+            <div className="flex gap-2 flex-col md:flex-row ">
+                <div className="space-y-2 w-full">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="provide new for update else old"
+                    />
+                </div>
+                <div className="space-y-2 w-full">
+                    <Label htmlFor="profilePicture">Profile Picture</Label>
+                    <Input
+                        id="profilePicture"
+                        name="profilePicture"
+                        type="file"
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        />
+                </div>
+            </div>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>Update Profile</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirm Profile Update</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to update your profile? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmit} disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Confirm Update"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </CardFooter>
+      </Card>
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
     </div>
   )
 }
 
 export default ProfilePage
+

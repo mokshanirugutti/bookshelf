@@ -31,9 +31,9 @@ const NavBar : React.FC = () => {
                 <h1 className="text-2xl font-semibold tracking-wide">BookShelf</h1>
             </Link>
             <div className="hidden md:flex gap-6 min-w-fit">
-              <Link to="/books" className="hover:text-[#344054]" >Books</Link>
-              <Link to="#" className="hover:text-[#344054]" >Reviews</Link>
-              <Link to="#" className="hover:text-[#344054]" >About Us</Link>
+              {/* <Link to="/books" className="hover:text-[#344054]" >Books</Link> */}
+              {/* <Link to="#" className="hover:text-[#344054]" >Reviews</Link> */}
+              {/* <Link to="#" className="hover:text-[#344054]" >About Us</Link> */}
             </div>
             <div className="hidden md:flex gap-4 min-w-fit">
             {user ? (
@@ -86,12 +86,12 @@ const NavBar : React.FC = () => {
                 )}
             </div>
             {isOpen && (
-            <div className=" h-screen w-screen absolute top-0 right-0 z-20 backdrop-blur-md p-10 mt-16">
+            <div className=" h-screen w-screen absolute top-0 right-0 z-20 backdrop-blur-md p-10 mt-16 bg-background">
                 
                 <div className="flex flex-col gap-6 min-w-fit">
-                  <Link to="/books" className="hover:text-[#344054]" onClick={toggleMenu}>Books</Link>
-                  <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>Reviews</Link>
-                  <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>About Us</Link>
+                  {/* <Link to="/books" className="hover:text-[#344054]" onClick={toggleMenu}>Books</Link> */}
+                  {/* <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>Reviews</Link> */}
+                  {/* <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>About Us</Link> */}
                     {user ? (
               <button 
                 onClick={logout} 

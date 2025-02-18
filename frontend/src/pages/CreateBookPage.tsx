@@ -5,14 +5,15 @@ import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import useCreateBook from "@/hooks/useCreateBook";
+import MultiSelect from "@/components/Multiselect";
 
 const CreateBookPage: React.FC = () => {
-  const [title, setTitle] = useState<String>('');
-  const [description, setDescription] = useState<String>('');
-  const [author, setAuthor] = useState<String>('');
-  const [genre, setGenre] = useState<String>('');
-  const [price, setPrice] = useState<Number>(0);
-  const [rating, setRating] = useState<Number>(0);
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [author, setAuthor] = useState<string>('');
+  const [genre, setGenre] = useState<string>('');
+  const [price, setPrice] = useState<number>(0);
+
   const [bookCover, setBookCover] = useState<File | null>(null);
 
   const { createBook, isLoading, error } = useCreateBook();
@@ -30,7 +31,6 @@ const CreateBookPage: React.FC = () => {
       author,
       genre,
       price,
-      rating,
       bookCover,
     };
     console.log('sending requrest with');
@@ -68,30 +68,26 @@ const CreateBookPage: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-author`}>Author</Label>
-                <Input
-                  id={`${id}-author`}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="Author"
-                  type="text"
-                  required
-                  className="text-sm p-2"
-                />
-              </div>
+              <div className="flex space-x-4">
 
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-genre`}>Genre</Label>
-                <Input
-                  id={`${id}-genre`}
-                  onChange={(e) => setGenre(e.target.value)}
-                  placeholder="Genre"
-                  type="text"
-                  required
-                  className="text-sm p-2"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${id}-author`}>Author</Label>
+                  <Input
+                    id={`${id}-author`}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    placeholder="Author"
+                    type="text"
+                    required
+                    className="text-sm p-2"
+                    />
+                </div>
 
+                <div className="space-y-2">
+                 
+                    <MultiSelect title="Genre" placeholder="select genre" id={`${id}-genre`} setValue={setGenre} value={genre}/>
+                </div>
+
+              </div>
               <div className="space-y-2">
                 <Label htmlFor={`${id}-bookCover`}>Book Cover</Label>
                 <Input id={`${id}-bookCover`} className="p-0 pe-3 file:me-3 file:border-0 file:border-e" 
@@ -113,17 +109,6 @@ const CreateBookPage: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`${id}-rating`}>Rating</Label>
-                <Input
-                  id={`${id}-rating`}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  placeholder="Rating"
-                  type="number"
-                  required
-                  className="text-sm p-2"
-                />
-              </div>
             </div>
           </div>
           {error && <p className="text-red-600">{error}</p>}

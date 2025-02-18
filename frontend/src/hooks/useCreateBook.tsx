@@ -1,7 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 const useCreateBook = () => {
+    const navigate = useNavigate();
+    const URL = import.meta.env.VITE_BACKEND_URL;
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
   
@@ -19,7 +23,7 @@ const useCreateBook = () => {
         formData.append("author", bookData.author);
         formData.append("genre", bookData.genre);
         formData.append("price", bookData.price.toString()); 
-        formData.append("rating", bookData.rating.toString())
+        
   
         if (bookData.bookCover) {
           formData.append("bookCover", bookData.bookCover);
@@ -29,14 +33,16 @@ const useCreateBook = () => {
         setIsLoading(true);
         setError(null);
   
-        const response = await axios.post("http://localhost:3000/books", formData, {
+        const response = await axios.post(`${URL}/books`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data", 
           },
         });
   
+        navigate("/books");
         return response.data;
+
       } catch (err) {
         
           setError(err instanceof Error ? err.message : "An error occurred");

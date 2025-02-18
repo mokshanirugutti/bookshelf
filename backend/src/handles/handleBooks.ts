@@ -5,22 +5,28 @@ import fs from 'fs'
 
 export const getAllBooks = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Get page and limit from query parameters, defaulting to 1 and 10 respectively
+        
+        // Get page and limit from query parameters, defaulting to 1 and 5
         const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-
+        const limit = parseInt(req.query.limit as string) || 5;
+        
         // Calculate the number of documents to skip
         const skip = (page - 1) * limit;
 
+        const { genre } = req.query;
+
+        // console.log(`request genre ${genre}`)
+        const query = genre ? { genre: new RegExp(genre as string, 'i') } : {};
+
         // Fetch the books with pagination
-        const books = await Book.find()
+        const books = await Book.find(query)
             .select('-reviews') // Exclude reviews
-            .sort({ createdAt: 1 }) // Sort by createdAt
+            .sort({ createdAt: 1 }) 
             .skip(skip) // Skip the documents
-            .limit(limit); // Limit the number of documents
+            .limit(limit); 
 
         // Get the total count of books for pagination info
-        const totalBooks = await Book.countDocuments();
+        const totalBooks = await Book.countDocuments(query);
 
         // Calculate total pages
         const totalPages = Math.ceil(totalBooks / limit);
@@ -51,7 +57,7 @@ export const getBookById = async (req: Request, res: Response): Promise<void> =>
 
         res.json({"book":book});
     } catch (error) {
-        res.status(500).json({ error: 'Error fetching book' });
+        res.status(500).json({ error: `Error fetching book - ${error}` });
     }
 };
 
@@ -63,7 +69,7 @@ export const createBook = async (req: Request, res: Response): Promise<void> => 
             const uploadResult = await uploadToCloudinary(req.file.path);
             if (uploadResult && uploadResult.secure_url) {
                 bookCover = uploadResult.secure_url;
-                fs.unlinkSync(req.file.path); // Remove file after upload
+                fs.unlinkSync(req.file.path); 
             }
         }
         const book = new Book({
@@ -142,9 +148,9 @@ export const deleteBook = async (req: Request, res: Response): Promise<void> => 
 export const postReview = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params; // Get the book ID from the request parameters
-        const { content, rating } = req.body; // Get the review content and rating from the request body
+        const { content, rating } = req.body; 
 
-        // Find the book by ID
+        
         const book = await Book.findById(id);
 
         if (!book) {
@@ -152,7 +158,7 @@ export const postReview = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
-        // Create a new review object
+        
         const newReview = {
             userId: req.userId, 
             content,
@@ -161,6 +167,13 @@ export const postReview = async (req: Request, res: Response): Promise<void> => 
 
         // Add the new review to the book's reviews array
         book.reviews.push(newReview);
+                
+        // Calculate the new average rating
+        const totalRatings = book.reviews.reduce((acc, review) => acc + review.rating!, 0);
+        const averageRating = totalRatings / book.reviews.length;
+        
+        // Update the book's rating
+        book.rating = averageRating;
 
         // Save the updated book document
         await book.save();
@@ -170,3 +183,15 @@ export const postReview = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ error: `Error posting review - ${error}` });
     }
 };
+
+
+export const getAllGenres = async (req : Request, res: Response): Promise<void> => {
+    try {
+        // console.log('trying to get genre')
+        const genres = await Book.distinct('genre');
+        res.status(200).json({genres });
+    } catch (error) {
+        res.status(500).json({ error: `Error fetching genres - ${error}` });
+    }
+
+}
