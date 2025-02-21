@@ -33,8 +33,8 @@ const CreateBookPage: React.FC = () => {
       price,
       bookCover,
     };
-    console.log('sending requrest with');
-    console.log(bookData)
+    // console.log('sending requrest with');
+    // console.log(bookData)
     await createBook(bookData);
   };
 

@@ -9,6 +9,7 @@ import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReviews } from '@/redux/reviewsSlice';
 import { RootState } from '@/store';
+import Loader from '@/components/Loader';
 
 const BookPage: React.FC = () => {
   const { bookId } = useParams<{ bookId: string }>();
@@ -23,7 +24,7 @@ const BookPage: React.FC = () => {
     }
   }, [data, dispatch]);
 
-  if (loading) return <div>Loading book details...</div>;
+  if (loading) return <Loader/>;
   if (error) return <div>Error: {error}</div>;
 
   return (

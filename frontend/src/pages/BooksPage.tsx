@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import DisplayBooks from '@/components/books/DisplayBooks';
 import useGenres from '@/hooks/useGenres';
 import SingleSelect from '@/components/SingleSelect';
+import Loader from '@/components/Loader';
 
 const BooksPage: React.FC = () => {
   const { genres, loading: loadingGenres, error: genresError } = useGenres();
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
-  if (loadingGenres) return <div></div>;
+  if (loadingGenres) return <Loader/>
   if (genresError) return <div className='pagePadding'>Error: {genresError}</div>;
 
   return (
