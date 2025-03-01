@@ -24,6 +24,10 @@ const NavBar : React.FC = () => {
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
+    const handleLogout = () => {
+      logout();
+      navigate('/')
+    }
   return (
     <div className="w-full flex justify-between py-4 items-center pagePadding sticky top-0 z-50 backdrop-blur-lg">
             <div className="w-full  flex mx-auto justify-between items-center">
@@ -58,11 +62,11 @@ const NavBar : React.FC = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {user.role === 'admin' &&
-              <DropdownMenuItem onClick={() => {navigate('/createbook')}}>Add Books</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/createbook')}>Add Books</DropdownMenuItem>
             }
-              <DropdownMenuItem onClick={() => {navigate('/profile')}}>Profile</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/profile')}>Profile</DropdownMenuItem>
 
-              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           ) : (
@@ -94,7 +98,7 @@ const NavBar : React.FC = () => {
                   {/* <Link to="#" className="hover:text-[#344054]" onClick={toggleMenu}>About Us</Link> */}
                     {user ? (
               <button 
-                onClick={logout} 
+                onClick={handleLogout} 
                 className="bg-red-500 text-white text-base px-4 py-2 rounded-md font-semibold"
               >
                 Logout

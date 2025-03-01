@@ -5,6 +5,7 @@ import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { useUser } from '@/context/UserContext';
 import { useNavigate } from 'react-router';
+import { Toaster, toast }  from 'react-hot-toast'
 
 const RegisterPage : React.FC = () => {
 
@@ -16,6 +17,7 @@ const RegisterPage : React.FC = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
 
   
 
@@ -28,7 +30,9 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData();
+    console.log(username, email, password,)
     formData.append('username', username);
     formData.append('email', email);
     formData.append('password', password);
@@ -37,8 +41,15 @@ const handleRegister = async (e: React.FormEvent) => {
     }
 
     try {
-        await register(formData);
-        navigate('/');
+        console.log("before sending data")
+        formData.forEach((value, key) => {
+          console.log(`${key}:`, value);
+      });
+        const {message , status} = await register(formData);
+        if (status === 201) {
+          navigate('/')
+        }else toast.error(message)
+        setLoading(false)
     } catch (error) {
         console.error(error);
     }
@@ -47,6 +58,10 @@ const handleRegister = async (e: React.FormEvent) => {
   const id = useId();
   return (
     <div className="h-screen w-screen  flex justify-center items-center">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
       <div className="w-72 mx-auto border  px-3 py-6 rounded-md">
         <h1 className="text-xl text-center font-semibold">Register</h1>
       <form className="space-y-5" onSubmit={handleRegister}>
@@ -98,7 +113,10 @@ const handleRegister = async (e: React.FormEvent) => {
             <p className="text-sm text-gray-400">Already have an account?<a href="/login" className="text-[#7F56D9] underline px-1">Login</a></p>
         </div>
         <Button type="submit" className="w-full">
-          Sign in
+          {loading ? "Registering..." : "Register"}
+        </Button>
+        <Button onClick={() => navigate("/")} variant={"destructive"} className="w-full">
+            Cancel
         </Button>
       </form>
       </div>

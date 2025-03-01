@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { useToast } from "@/hooks/use-toast"
+import { Toaster, toast }  from 'react-hot-toast'
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,6 @@ import {
 const ProfilePage: React.FC = () => {
   const { user } = useUser()
   const { updateProfile, loading, error } = useUpdateProfile()
-  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     username: user?.username || "",
@@ -52,7 +51,8 @@ const ProfilePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsDialogOpen(false)
+    
+    
     const data = new FormData()
     data.append("username", formData.username)
     data.append("email", formData.email)
@@ -65,17 +65,20 @@ const ProfilePage: React.FC = () => {
 
     try {
       await updateProfile(data)
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
-      })
+      toast.success("Profile updated" )
+      setIsDialogOpen(false)
     } catch (error) {
+      toast.error("Error updating profile")
       console.error("Error updating profile:", error)
     }
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
       <Card className="max-w-xl mx-auto">
         <CardHeader>
           <div className="flex items-center space-x-4">
@@ -111,7 +114,7 @@ const ProfilePage: React.FC = () => {
                         type="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="provide new for update else old"
+                        placeholder="provide new for update else leave"
                     />
                 </div>
                 <div className="space-y-2 w-full">

@@ -10,8 +10,8 @@ export interface User {
   export interface UserContextType {
     user: User | null; 
     token: string | null;
-    register: (formData: FormData) => Promise<void>;
-    login: (username: string, password: string) => Promise<void>; // identifier can be username or email
+    register: (formData: FormData) => Promise<{message : string , status:number}>;
+    login: (username: string, password: string) => Promise<{message : string , status:number}>; 
     logout: () => void;
   }
 

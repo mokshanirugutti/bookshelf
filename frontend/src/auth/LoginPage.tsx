@@ -5,6 +5,7 @@ import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { useNavigate } from "react-router";
+import { Toaster, toast }  from 'react-hot-toast'
 
 const LoginPage: React.FC = () => {
   const id = useId();
@@ -14,13 +15,19 @@ const LoginPage: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      await login(username, password); 
-      navigate("/"); 
+      const {message , status } = await login(username, password); 
+      if (status === 200){
+          navigate('/')
+      }else toast.error(message)
+      setLoading(false);
+
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     }
@@ -28,6 +35,10 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="h-screen w-screen flex justify-center items-center">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
       <div className="w-72 mx-auto border px-3 py-6 rounded-md">
         <h1 className="text-xl text-center font-semibold">Login</h1>
         <form onSubmit={handleLogin} className="space-y-5">
@@ -65,7 +76,10 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
           <Button type="submit" className="w-full">
-            Login
+            {loading ? 'login in ...' : 'login'}
+          </Button>
+          <Button onClick={() => navigate("/")} variant={"destructive"} className="w-full">
+            Cancel
           </Button>
         </form>
       </div>

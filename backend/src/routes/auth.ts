@@ -13,12 +13,13 @@ const router = Router();
 // Middleware to validate registration
 const validateRegistration = (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log(req.body)
         userRegistrationSchema.parse(req.body);
         next();
     } catch (error) {
         if (error instanceof ZodError) {
-            const firstError = error.errors[0];
-            res.status(400).json({ error: firstError.message });
+            // const firstError = error.errors[0];
+            res.status(400).json({ error: error });
         }
     }
 };

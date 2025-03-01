@@ -1,6 +1,7 @@
 // UserContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserContextType } from '@/types';
+import axios from 'axios'
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -43,39 +44,69 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (formData : FormData) => {
     try {
-      const response = await fetch(`${URL}/auth/register`, {
-        method: 'POST',
-        body: formData,
-    });
-      if (!response.ok) throw new Error('Registration failed');
+      const response = await axios.post(`${URL}/auth/register`, {
+         username : formData.get('username'),
+         email : formData.get('email'),
+         password : formData.get('password'),
+         profilePicture : formData.get('profilePicture')
+    },
+    {
+      headers: {
+          'Content-Type': 'multipart/form-data',
+      },
+  }
 
-      const data: { user: User; token: string } = await response.json();
+  );
+
+      const data: { user: User; token: string } = response.data;
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
-    } catch (error) {
-      console.error('Error registering user:', error);
-    }
+      return { message: response.data.message, status: response.status };
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error in register :", error.response.data);
+        return { 
+          message: error.response.data.message || error.response.data.error || "Register failed", 
+          status: error.response.status 
+        };
+      } else {
+        console.error("Network or unknown error:", error);
+        return { message: "Network error. Please try again.", status: 500 };
+      }
+  }
   };
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await fetch(`${URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post(`${URL}/auth/login`, {
+        username,
+        password,
       });
 
-      if (!response.ok) throw new Error('Login failed');
+      // console.log("Response Data:", response.data);
+      // console.log("Status:", response.status);
+      // console.log("message:", response.data.message);
+      setUser(response.data.user);
+      setToken(response.data.token);
+      localStorage.setItem('token', response.data.token);
 
-      const data: { user: User; token: string } = await response.json();
-      setUser(data.user);
-      setToken(data.token);
-      localStorage.setItem('token', data.token);
-    } catch (error) {
-      console.error('Error logging in:', error);
-    }
-  };
+
+      return { message: response.data.message, status: response.status };
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error logging in:", error.response.data);
+        return { 
+          message: error.response.data.message || error.response.data.error || "Login failed", 
+          status: error.response.status 
+        };
+      } else {
+        console.error("Network or unknown error:", error);
+        return { message: "Network error. Please try again.", status: 500 };
+      }
+  }
+};
+
 
   const logout = () => {
     setUser(null);

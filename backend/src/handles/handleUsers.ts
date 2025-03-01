@@ -10,7 +10,7 @@ import { uploadToCloudinary } from '../config/cloudinary';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role = "user" } = req.body;
 
 
         // Check if user already exists
@@ -22,6 +22,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             res.status(400).json({ 
                 error: 'User with this email or username already exists' 
             });
+            return
          
         }
 
@@ -92,7 +93,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         // Generate JWT
         const token = generateToken(user._id.toString());
 
-        res.json({
+        res.status(200).json({
             message: 'Login successful',
             token,
             user: {
