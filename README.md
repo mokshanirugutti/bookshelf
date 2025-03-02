@@ -23,11 +23,6 @@ This project is  built with **Node.js**, **Express**, and **MongoDB**, featuring
 - **bcryptjs** – Password hashing
 - **jsonwebtoken** – Authentication with JWT
 - **Multer** – File uploads
-
----
-
-Here’s the updated **Installation** section with improved formatting and clarity:  
-
 ---
 
 ## ⚙️ Installation
